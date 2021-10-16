@@ -19,6 +19,7 @@ unsigned int parse_n_store_words(char *buf, htable_t *ht)
   char* token = strtok(buf, "\n");
   while(token != NULL){
     htable_put(ht, token, 1, &sum_accum);
+    token = strtok(NULL, "\n");
   }
   return ht->size;
 }

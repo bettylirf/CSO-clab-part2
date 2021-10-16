@@ -47,43 +47,37 @@ void sum_accum(int *existing_val, int new_val)
 //
 // You may use strcmp from C library (instead of your own string_cmp in str.h).
 bool list_insert_with_accum(lnode_t **headdp, char *key, int val, 
-    void (*accum)(int *existing_val, int new_val))
-{
-  lnode_t * curr = *headdp;
-  lnode_t * new_node =  malloc(sizeof(lnode_t));
-  new_node->tuple.key = key;
-  new_node->tuple.val = val;
-  if(curr == NULL) {
-    new_node->next = *headdp;
-    *headdp = new_node;
+    void (*accum)(int *existing_val, int new_val)){
+  if(key == NULL)
+    return false;
+  lnode_t* np = (lnode_t*) malloc(sizeof(lnode_t));
+  np->tuple.key = key;
+  np->tuple.val = val;
+  lnode_t* tmp = *headdp;
+  int comp = (tmp == NULL) ? (-1) : strcmp(key, tmp->tuple.key);
+  if(comp < 0){ //list is empty or add to head of the list
+    np->next = *headdp;
+    *headdp = np;
     return true;
-  } else { 
-    if (strcmp(key, curr->tuple.key) < 0) { // insert in the front of the list
-      new_node->next = *headdp;
-      *headdp = new_node;
-      return true;
-    } else {
-      while (curr->next) {
-        if(strcmp(key, (curr->next)->tuple.key) >= 0)
-          curr = curr->next;
-        else
-          break;
-      }
-      if(strcmp(key, curr->tuple.key) == 0) {
-        (*accum)(&(curr->tuple.val), val);
-        return false;
-      } else {
-        if(curr->next == NULL)
-          curr->next = new_node;
-        else {
-          new_node->next = curr->next;
-          curr->next = new_node;
-        }
-        return true;
-      }
-    }
-
   }
+  while(comp!= 0 && tmp->next){
+    comp = strcmp(key, (tmp->next)->tuple.key);
+    if(comp >= 0)
+      tmp = tmp->next;
+    if(comp <= 0)
+      break;
+  }
+  if(comp == 0){ //duplicate key in current list
+    (*accum)(&(tmp->tuple.val), val);
+    return false;
+  }else if(comp < 0){ //insert in arbitrary position in middle
+    np->next = tmp->next;
+    tmp->next = np;
+  }else{ //insert at tail
+    tmp->next = np;
+    np->next = NULL;
+  }
+  return true;
 }
 
 // Find if a given key string exists in the sorted linked list.
@@ -121,39 +115,3 @@ int list_get_all_tuples(lnode_t *headp, kv_t *tuples, int max)
   return i;
 }
 
-// int main(){
-//   lnode_t* headp;
-//   list_init(&headp);
-//   printf("===========INSERTING=====================\n");
-//   list_insert_with_accum(&headp, "betty", 2, &sum_accum);
-//   bool b1 = list_insert_with_accum(&headp, "amy", 6, &sum_accum);
-//   bool b2 = list_insert_with_accum(&headp, "betty", 5, &sum_accum);
-//   list_insert_with_accum(&headp, "julia", 9, &sum_accum);
-//   list_insert_with_accum(&headp, "wallace", 8, &sum_accum);
-//   list_insert_with_accum(&headp, "bernice", 39, &sum_accum);
-//   list_insert_with_accum(&headp, "austin", 18, &sum_accum);
-//   list_print(&headp);
-//   printf("===========FINDING=====================\n"); 
-//   printf("The result of finding 'amy': %d\n", list_find(headp,"amy"));
-//   printf("===========GETTING TUPLES=====================\n");
-//   kv_t* tuples = (kv_t*) malloc(sizeof(kv_t) * 10);
-//   int len_tuples = list_get_all_tuples(headp,tuples,10);
-//   array_print(tuples, len_tuples);
-// }
-
-// void array_print(kv_t* arr, int len){
-//   printf("============Printing the Tuples Array=============\n");
-//   int i = 0;
-//   while(i < len){
-//     printf("arr[%d]: (%s, %d)\n", i, arr[i].key, arr[i].val);
-//     i++;
-//   }
-// }
-// void list_print(lnode_t **headdp){
-//   printf("\nPrinting the list===========\n");
-//   lnode_t* tmp = *headdp;
-//   while(tmp){
-//     printf("(%s, %d)\n", tmp->tuple.key, tmp->tuple.val);
-//     tmp = tmp->next;
-//   }
-// }
