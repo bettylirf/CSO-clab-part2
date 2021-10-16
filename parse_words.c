@@ -16,7 +16,9 @@
 //Hint: consider using the C library function strtok_r
 unsigned int parse_n_store_words(char *buf, htable_t *ht)
 {
-  //TODO: Your code here
+  char* token = strtok(buf, "\n");
+  while(token != NULL){
+    htable_put(ht, token, 1, &sum_accum);
+  }
+  return ht->size;
 }
-
-

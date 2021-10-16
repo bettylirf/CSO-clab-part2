@@ -1,5 +1,5 @@
 CC     := gcc
-CFLAGS := -Werror -g -Og
+CFLAGS := -Werror -std=gnu99 -g -Og
 
 
 OBJS := str.o list.o htable.o parse_words.o 

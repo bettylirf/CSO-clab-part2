@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <assert.h>
-
 #include "string.h"
 
 
@@ -12,8 +11,10 @@
 // it is recommended that you use strlen instead of string_len
 int string_len(char *s)
 {
-  // TODO: Your code here.
-
+  int i = 0;
+  while(s[i] != '\0')
+    i++;
+  return i;
 }
 
 // Compare strings "s1" and "s2". It returns less than, equal to or great than zero 
@@ -30,8 +31,15 @@ int string_len(char *s)
 // it is recommended that you use strcmp instead of string_cmp.
 int string_cmp(char *s1, char *s2)
 {
-  // TODO: Your code here.
-
+  int i = 0;
+  int comp = 0;
+  while(s1[i] != '\0' && s2[i] != '\0'){
+    comp  = s1[i] - s2[i];
+    if(comp != 0)
+      return comp;
+    i++;
+  }
+  return string_len(s1) - string_len(s2);
 }
 
 // Convert integer x into hex format and store the resulting hex string to "str",
@@ -43,6 +51,20 @@ int string_cmp(char *s1, char *s2)
 // Note: please do not use formatted output, such as sprintf
 void int_to_hex(unsigned int x, char *str)
 {
-  // TODO: Your code here.
+  int i = 7;
+  int tmp = 0;
+  while(x != 0){
+    tmp = x % 16;
+    if(tmp < 10)
+      str[i] = tmp + '0';
+    else
+      str[i] = tmp - 10 + 'a';
+    i--;
+    x = x/16;
+  }
+  while(i >= 0){
+    str[i] = '0';
+    i--;
+  }
 }
 

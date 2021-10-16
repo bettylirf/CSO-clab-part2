@@ -16,7 +16,8 @@
 // points to the head pointer to be initialized.
 void list_init(lnode_t **headdp)
 {
-  //TODO: your code here
+  *headdp = (lnode_t*) malloc(sizeof(lnode_t));
+  *headdp = NULL;
 }
 
 // sum_accum is an accumulator function that adds "new_val" into the 
@@ -48,7 +49,41 @@ void sum_accum(int *existing_val, int new_val)
 bool list_insert_with_accum(lnode_t **headdp, char *key, int val, 
     void (*accum)(int *existing_val, int new_val))
 {
-  //TODO: Your code here
+  lnode_t * curr = *headdp;
+  lnode_t * new_node =  malloc(sizeof(lnode_t));
+  new_node->tuple.key = key;
+  new_node->tuple.val = val;
+  if(curr == NULL) {
+    new_node->next = *headdp;
+    *headdp = new_node;
+    return true;
+  } else { 
+    if (strcmp(key, curr->tuple.key) < 0) { // insert in the front of the list
+      new_node->next = *headdp;
+      *headdp = new_node;
+      return true;
+    } else {
+      while (curr->next) {
+        if(strcmp(key, (curr->next)->tuple.key) >= 0)
+          curr = curr->next;
+        else
+          break;
+      }
+      if(strcmp(key, curr->tuple.key) == 0) {
+        (*accum)(&(curr->tuple.val), val);
+        return false;
+      } else {
+        if(curr->next == NULL)
+          curr->next = new_node;
+        else {
+          new_node->next = curr->next;
+          curr->next = new_node;
+        }
+        return true;
+      }
+    }
+
+  }
 }
 
 // Find if a given key string exists in the sorted linked list.
@@ -60,7 +95,13 @@ bool list_insert_with_accum(lnode_t **headdp, char *key, int val,
 // You may use strcmp from C library (instead of your own string_cmp in str.h).
 int list_find(lnode_t *headp, char *key)
 {
-  // TODO: Your code here
+  lnode_t* tmp = headp;
+  while(tmp){
+    if(strcmp(tmp->tuple.key, key) == 0)
+      return tmp->tuple.val;
+    tmp = tmp->next;
+  }
+  return -1;
 }
 
 // Traverse the linked list starting from node pointed to by "headp" 
@@ -68,8 +109,51 @@ int list_find(lnode_t *headp, char *key)
 // The capacity of the "tuples" array is "max", thus, the function should not 
 // store more than "max" pointers in "tuples".
 // Return value is the actual number of key-value tuples 
-// written to "tuples".
 int list_get_all_tuples(lnode_t *headp, kv_t *tuples, int max)
 {
-  // TODO: Your code here
+  lnode_t* tmp = headp;
+  int i = 0;
+  while(i < max && (tmp != NULL)){
+    tuples[i] = tmp->tuple;
+    i++;
+    tmp = tmp->next;
+  }
+  return i;
 }
+
+// int main(){
+//   lnode_t* headp;
+//   list_init(&headp);
+//   printf("===========INSERTING=====================\n");
+//   list_insert_with_accum(&headp, "betty", 2, &sum_accum);
+//   bool b1 = list_insert_with_accum(&headp, "amy", 6, &sum_accum);
+//   bool b2 = list_insert_with_accum(&headp, "betty", 5, &sum_accum);
+//   list_insert_with_accum(&headp, "julia", 9, &sum_accum);
+//   list_insert_with_accum(&headp, "wallace", 8, &sum_accum);
+//   list_insert_with_accum(&headp, "bernice", 39, &sum_accum);
+//   list_insert_with_accum(&headp, "austin", 18, &sum_accum);
+//   list_print(&headp);
+//   printf("===========FINDING=====================\n"); 
+//   printf("The result of finding 'amy': %d\n", list_find(headp,"amy"));
+//   printf("===========GETTING TUPLES=====================\n");
+//   kv_t* tuples = (kv_t*) malloc(sizeof(kv_t) * 10);
+//   int len_tuples = list_get_all_tuples(headp,tuples,10);
+//   array_print(tuples, len_tuples);
+// }
+
+// void array_print(kv_t* arr, int len){
+//   printf("============Printing the Tuples Array=============\n");
+//   int i = 0;
+//   while(i < len){
+//     printf("arr[%d]: (%s, %d)\n", i, arr[i].key, arr[i].val);
+//     i++;
+//   }
+// }
+// void list_print(lnode_t **headdp){
+//   printf("\nPrinting the list===========\n");
+//   lnode_t* tmp = *headdp;
+//   while(tmp){
+//     printf("(%s, %d)\n", tmp->tuple.key, tmp->tuple.val);
+//     tmp = tmp->next;
+//   }
+// }
