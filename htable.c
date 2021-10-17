@@ -57,7 +57,8 @@ void htable_put(htable_t *ht, char *key, int val,
 {
   unsigned int hcode = hashcode(key);
   unsigned int index = hcode % (ht->arr_capacity);
-  if(list_insert_with_accum(&(ht->arr[index]), key, val, (*accum)) == true);
+  lnode_t** rt = &(ht->arr[index]);
+  if(list_insert_with_accum(rt, key, val, (*accum)) == true);
     ht->size++;
 }
 
@@ -84,13 +85,12 @@ int htable_get(htable_t *ht, char *key)
 //
 // Return the actual number of key-value tuples 
 // written to "tuples".
-int htable_get_all_tuples(htable_t *ht, kv_t *tuples, int max)
-{
+int htable_get_all_tuples(htable_t *ht, kv_t *tuples, int max){
   int count = 0;
   int i = 0;
-  while(i < ht->arr_capacity){
+  while(count < max && i < ht->arr_capacity){
     lnode_t* tmp = ht->arr[i];
-    while(i < max && tmp){
+    while((tmp != NULL) && i < max){
       tuples[count] = tmp->tuple;
       tmp = tmp->next;
       count++;
