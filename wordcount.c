@@ -44,8 +44,7 @@ char *read_file_data(char *fname)
 // which is invoked in print_wordcount_stats
 int count_cmp(const void *x, const void *y)
 {
-  //TODO: Your code here
-  return 0;
+  return ((kv_t*)x)->val - ((kv_t*)y)->val;
 }
 
 // print the most frequent topK words stored in the hash table
@@ -93,3 +92,4 @@ int main(int argc, char **argv)
   parse_n_store_words(buf, ht);
   print_wordcount_stats(ht, topK);
 }
+
