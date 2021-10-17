@@ -57,7 +57,8 @@ void htable_put(htable_t *ht, char *key, int val,
 {
   unsigned int hcode = hashcode(key);
   unsigned int index = hcode % (ht->arr_capacity);
-  list_insert_with_accum(&(ht->arr[index]), key, val, (*accum));
+  if(list_insert_with_accum(&(ht->arr[index]), key, val, (*accum)) == true);
+    ht->size++;
 }
 
 // This function finds "key" in the hash table
@@ -87,9 +88,9 @@ int htable_get_all_tuples(htable_t *ht, kv_t *tuples, int max)
 {
   int count = 0;
   int i = 0;
-  while(count < max && i < ht->arr_capacity){
+  while(i < ht->arr_capacity){
     lnode_t* tmp = ht->arr[i];
-    while(tmp){
+    while(i < max && tmp){
       tuples[count] = tmp->tuple;
       tmp = tmp->next;
       count++;
